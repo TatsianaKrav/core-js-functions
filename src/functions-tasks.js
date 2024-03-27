@@ -113,7 +113,7 @@ function getPolynom() {
 function memoize(func) {
   const cache = {};
 
-  return function () {
+  return () => {
     if (func in cache) return cache[func];
 
     const result = func();
@@ -137,8 +137,25 @@ function memoize(func) {
  * }, 2);
  * retryer() => 2
  */
-function retry(/* func, attempts */) {
-  throw new Error('Not implemented');
+function retry(func, attempts) {
+  return () => {
+    let count = 1;
+    let result;
+
+    try {
+      result = func();
+    } catch (err) {
+      while (count < attempts) {
+        try {
+          return func();
+        } catch (e) {
+          count += 1;
+        }
+      }
+    }
+
+    return result;
+  };
 }
 
 /**
